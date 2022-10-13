@@ -10,7 +10,7 @@ SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
     m_query(query)
   , m_sourceConnectionName(database.connectionName())
 {
-    moveToThread(ThreadManager::instance()->create().get());
+    moveToThread(new QThread(this));
     connect(thread(), &QThread::started, this, &SqlQueryExecutor::execQuery);
     thread()->start();
 }
@@ -22,8 +22,6 @@ SqlQueryExecutor::~SqlQueryExecutor()
         thread()->wait();
     }
     QSqlDatabase::removeDatabase(m_connectionName);
-    bool result = ThreadManager::instance()->destroy(thread());
-    Q_ASSERT(result && "Thread is not deleted.");
 }
 
 void SqlQueryExecutor::execQuery()
@@ -58,7 +56,6 @@ void SqlQueryExecutor::execQuery()
         emit failed(database.lastError().text());
     }
     thread()->quit();
-    emit espired();
 }
 
 QString SqlQueryExecutor::getAvailableConnectionName() const

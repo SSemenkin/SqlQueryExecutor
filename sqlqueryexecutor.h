@@ -1,10 +1,9 @@
 #ifndef SQLQUERYEXECUTOR_H
 #define SQLQUERYEXECUTOR_H
+#include "SqlQueryExecutor_global.h"
 
 #include <QObject>
 #include <QSqlDatabase>
-
-#include "threadmanager.h"
 
 class SQLQUERYEXECUTOR_EXPORT SqlQueryExecutor : public QObject
 {
@@ -20,7 +19,6 @@ public:
 signals:
     void finished(const SqlQueryExecutor::QueryResult&);
     void failed(const QString &description);
-    void espired();
 protected:
     virtual void execQuery();
     virtual QString getAvailableConnectionName() const;
