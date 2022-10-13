@@ -10,12 +10,17 @@ class SQLQUERYEXECUTOR_EXPORT SqlQueryExecutor : public QObject
     Q_OBJECT
 public:
     explicit SqlQueryExecutor(const QSqlDatabase &database, const QString &query);
+    virtual ~SqlQueryExecutor();
     struct QueryResult
     {
         QVector<QString> headers;
         QVector<QVector<QString>> data;
     };
-    ~SqlQueryExecutor();
+
+
+    [[nodiscard]] QString query() const;
+    [[nodiscard]] QSqlDatabase database() const;
+
 signals:
     void finished(const SqlQueryExecutor::QueryResult &result);
     void failed(const QString &description);
@@ -24,7 +29,6 @@ protected:
     virtual QString getAvailableConnectionName() const;
 protected:
     QString m_query;
-    QString m_sourceConnectionName;
     QString m_connectionName;
 };
 

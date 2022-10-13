@@ -8,7 +8,7 @@
 SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
                              const QString &query) :
     m_query(query)
-  , m_sourceConnectionName(database.connectionName())
+  , m_connectionName(database.connectionName())
 {
     moveToThread(new QThread(this));
     connect(thread(), &QThread::started, this, &SqlQueryExecutor::execQuery);
@@ -24,14 +24,24 @@ SqlQueryExecutor::~SqlQueryExecutor()
     QSqlDatabase::removeDatabase(m_connectionName);
 }
 
+QString SqlQueryExecutor::query() const
+{
+    return m_query;
+}
+
+QSqlDatabase SqlQueryExecutor::database() const
+{
+    return QSqlDatabase::database(m_connectionName);
+}
+
 void SqlQueryExecutor::execQuery()
 {
-    m_connectionName = getAvailableConnectionName();
-    QSqlDatabase database = QSqlDatabase::cloneDatabase(m_sourceConnectionName, m_connectionName);
+    QSqlDatabase database = QSqlDatabase::cloneDatabase(m_connectionName,
+                                                        m_connectionName = getAvailableConnectionName());
+
     if (database.open()) {
         QSqlQuery query(database);
         if (query.exec(m_query)) {
-
             SqlQueryExecutor::QueryResult result;
 
             while(query.next()) {
@@ -60,7 +70,7 @@ void SqlQueryExecutor::execQuery()
 
 QString SqlQueryExecutor::getAvailableConnectionName() const
 {
-    QString s = m_sourceConnectionName;
+    QString s = m_connectionName;
     while(QSqlDatabase::contains(s)) {
         s += QString::number(rand() % 10);
     }
