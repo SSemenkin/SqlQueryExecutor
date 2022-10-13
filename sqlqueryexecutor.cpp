@@ -6,18 +6,31 @@
 #include <QVariant>
 
 SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
-                             const QString &query) :
+                             const QString &query, SqlQueryExecutor::ExecutionPolicy policy) :
     m_query(query)
   , m_connectionName(database.connectionName())
+  , m_policy(policy)
 {
-    moveToThread(new QThread(this));
-    connect(thread(), &QThread::started, this, &SqlQueryExecutor::execQuery);
-    thread()->start();
+    switch(m_policy)
+    {
+        case SqlQueryExecutor::ExecutionPolicy::Async:
+        {
+            moveToThread(new QThread(this));
+            connect(thread(), &QThread::started, this, &SqlQueryExecutor::execQuery);
+            thread()->start();
+            break;
+        }
+        case SqlQueryExecutor::ExecutionPolicy::Sync:
+        {
+            execQuery();
+            break;
+        }
+    }
 }
 
 SqlQueryExecutor::~SqlQueryExecutor()
 {
-    if (thread()->isRunning()) {
+    if (m_policy == ExecutionPolicy::Async && thread()->isRunning()) {
         thread()->quit();
         thread()->wait();
     }

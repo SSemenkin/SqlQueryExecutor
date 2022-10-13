@@ -5,18 +5,24 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-class SQLQUERYEXECUTOR_EXPORT SqlQueryExecutor : public QObject
+class SQLQUERYEXECUTOR_EXPORT SqlQueryExecutor final : public QObject
 {
     Q_OBJECT
 public:
-    explicit SqlQueryExecutor(const QSqlDatabase &database, const QString &query);
+    enum class  ExecutionPolicy
+    {
+        Sync,
+        Async
+    };
+
+    explicit SqlQueryExecutor(const QSqlDatabase &database, const QString &query,
+                              SqlQueryExecutor::ExecutionPolicy policy = SqlQueryExecutor::ExecutionPolicy::Async);
     virtual ~SqlQueryExecutor();
     struct QueryResult
     {
         QVector<QString> headers;
         QVector<QVector<QString>> data;
     };
-
 
     [[nodiscard]] QString query() const;
     [[nodiscard]] QSqlDatabase database() const;
@@ -25,11 +31,12 @@ signals:
     void finished(const SqlQueryExecutor::QueryResult &result);
     void failed(const QString &description);
 protected:
-    virtual void execQuery();
-    virtual QString getAvailableConnectionName() const;
+    void execQuery();
+    QString getAvailableConnectionName() const;
 protected:
     QString m_query;
     QString m_connectionName;
+    ExecutionPolicy m_policy;
 };
 
 #endif // SQLQUERYEXECUTOR_H
