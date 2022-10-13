@@ -55,23 +55,7 @@ void SqlQueryExecutor::execQuery()
     if (database.open()) {
         QSqlQuery query(database);
         if (query.exec(m_query)) {
-            SqlQueryExecutor::QueryResult result;
-
-            while(query.next()) {
-                result.data.push_back({});
-                result.data.last().reserve(query.record().count());
-
-                if (result.headers.isEmpty()) {
-                    for (int i = 0; i < query.record().count(); ++i) {
-                        result.headers << query.record().fieldName(i);
-                    }
-                }
-
-                for (int i = 0; i < query.record().count(); ++i) {
-                    result.data.last().push_back(query.value(i).toString());
-                }
-            }
-            emit finished(result);
+            emit finished(query.isSelect() ? prepareResult(query) : QueryResult{});
         } else {
             emit failed(query.lastError().text());
         }
@@ -79,6 +63,27 @@ void SqlQueryExecutor::execQuery()
         emit failed(database.lastError().text());
     }
     thread()->quit();
+}
+
+SqlQueryExecutor::QueryResult SqlQueryExecutor::prepareResult(QSqlQuery &query) const
+{
+    SqlQueryExecutor::QueryResult result;
+
+    while(query.next()) {
+        result.data.push_back({});
+        result.data.last().reserve(query.record().count());
+
+        if (result.headers.isEmpty()) {
+            for (int i = 0; i < query.record().count(); ++i) {
+                result.headers << query.record().fieldName(i);
+            }
+        }
+
+        for (int i = 0; i < query.record().count(); ++i) {
+            result.data.last().push_back(query.value(i).toString());
+        }
+    }
+    return result;
 }
 
 QString SqlQueryExecutor::getAvailableConnectionName() const

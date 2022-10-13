@@ -32,6 +32,8 @@ signals:
     void failed(const QString &description);
 protected:
     void execQuery();
+    [[nodiscard]] QueryResult prepareResult(QSqlQuery &query) const;
+
     QString getAvailableConnectionName() const;
 protected:
     QString m_query;
