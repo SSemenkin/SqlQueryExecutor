@@ -17,7 +17,7 @@ public:
     };
     ~SqlQueryExecutor();
 signals:
-    void finished(const SqlQueryExecutor::QueryResult&);
+    void finished(const SqlQueryExecutor::QueryResult &result);
     void failed(const QString &description);
 protected:
     virtual void execQuery();

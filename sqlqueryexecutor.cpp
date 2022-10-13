@@ -40,7 +40,7 @@ void SqlQueryExecutor::execQuery()
 
                 if (result.headers.isEmpty()) {
                     for (int i = 0; i < query.record().count(); ++i) {
-                        result.headers << query.value(i).toString();
+                        result.headers << query.record().fieldName(i);
                     }
                 }
 
