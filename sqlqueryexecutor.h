@@ -22,6 +22,14 @@ public:
     {
         QVector<QString> headers;
         QVector<QVector<QString>> data;
+
+        bool operator ==(const QueryResult &other) const noexcept {
+            return headers == other.headers && data == other.data;
+        }
+
+        bool operator !=(const QueryResult &other) const noexcept {
+            return !operator==(other);
+        }
     };
 
     [[nodiscard]] QString query() const;
