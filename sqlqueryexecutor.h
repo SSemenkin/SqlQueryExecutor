@@ -34,6 +34,9 @@ public:
 
     [[nodiscard]] QString query() const;
     [[nodiscard]] QSqlDatabase database() const;
+    inline bool isBusy () const {
+        return m_busy;
+    }
 
 signals:
     void finished(const SqlQueryExecutor::QueryResult &result);
@@ -47,6 +50,7 @@ protected:
     QString m_query;
     QString m_connectionName;
     ExecutionPolicy m_policy;
+    bool m_busy {false};
 };
 
 #endif // SQLQUERYEXECUTOR_H

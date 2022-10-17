@@ -26,6 +26,7 @@ SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
             break;
         }
     }
+    m_busy = true;
 }
 
 SqlQueryExecutor::~SqlQueryExecutor()
@@ -63,6 +64,7 @@ void SqlQueryExecutor::execQuery()
         emit failed(database.lastError().text());
     }
     thread()->quit();
+    m_busy = false;
 }
 
 SqlQueryExecutor::QueryResult SqlQueryExecutor::prepareResult(QSqlQuery &query) const
