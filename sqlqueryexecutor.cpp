@@ -6,7 +6,7 @@
 #include <QVariant>
 
 SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
-                             const QString &query, SqlQueryExecutor::ExecutionPolicy policy) :
+                             const QString &query, SqlQueryExecutor::ExecutionPolicy policy) noexcept :
     m_query(query)
   , m_connectionName(database.connectionName())
   , m_policy(policy)
@@ -30,7 +30,7 @@ SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
     m_busy = true;
 }
 
-SqlQueryExecutor::~SqlQueryExecutor()
+SqlQueryExecutor::~SqlQueryExecutor() noexcept
 {
     if (m_policy == ExecutionPolicy::Async && thread()->isRunning()) {
         thread()->quit();
@@ -61,7 +61,7 @@ void SqlQueryExecutor::execQuery()
             emit failed(query.lastError().text());
         }
     } else {
-        emit failed(database.lastError().text());
+        emit failed(database.isValid() ? database.lastError().text() : tr("Database parameters are not valid."));
     }
     thread()->quit();
     m_busy = false;

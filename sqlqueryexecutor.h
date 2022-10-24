@@ -16,8 +16,8 @@ public:
     };
 
     explicit SqlQueryExecutor(const QSqlDatabase &database, const QString &query,
-                              SqlQueryExecutor::ExecutionPolicy policy = SqlQueryExecutor::ExecutionPolicy::Async);
-    virtual ~SqlQueryExecutor();
+                              SqlQueryExecutor::ExecutionPolicy policy = SqlQueryExecutor::ExecutionPolicy::Async) noexcept;
+    virtual ~SqlQueryExecutor() noexcept;
     struct QueryResult
     {
         QVector<QString> headers;
