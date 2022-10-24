@@ -22,10 +22,21 @@ public:
     {
         QVector<QString> headers;
         QVector<QVector<QString>> data;
+
+        bool operator ==(const QueryResult &other) const noexcept {
+            return headers == other.headers && data == other.data;
+        }
+
+        bool operator !=(const QueryResult &other) const noexcept {
+            return !operator==(other);
+        }
     };
 
     [[nodiscard]] QString query() const;
     [[nodiscard]] QSqlDatabase database() const;
+    inline bool isBusy () const {
+        return m_busy;
+    }
 
 signals:
     void finished(const SqlQueryExecutor::QueryResult &result);
@@ -39,6 +50,7 @@ protected:
     QString m_query;
     QString m_connectionName;
     ExecutionPolicy m_policy;
+    bool m_busy {false};
 };
 
 #endif // SQLQUERYEXECUTOR_H
