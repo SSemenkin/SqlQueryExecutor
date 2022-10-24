@@ -11,6 +11,7 @@ SqlQueryExecutor::SqlQueryExecutor(const QSqlDatabase &database,
   , m_connectionName(database.connectionName())
   , m_policy(policy)
 {
+    qRegisterMetaType<SqlQueryExecutor::QueryResult>("SqlQueryExecutor::QueryResult");
     switch(m_policy)
     {
         case SqlQueryExecutor::ExecutionPolicy::Async:
@@ -35,6 +36,7 @@ SqlQueryExecutor::~SqlQueryExecutor()
         thread()->quit();
         thread()->wait();
     }
+    QSqlDatabase::removeDatabase(m_connectionName);
 }
 
 QString SqlQueryExecutor::query() const
@@ -50,6 +52,7 @@ QSqlDatabase SqlQueryExecutor::database() const
 void SqlQueryExecutor::execQuery()
 {
     QSqlDatabase database = QSqlDatabase::cloneDatabase(m_connectionName, getAvailableConnectionName());
+    m_connectionName = database.connectionName();
     if (database.open()) {
         QSqlQuery query(database);
         if (query.exec(m_query)) {

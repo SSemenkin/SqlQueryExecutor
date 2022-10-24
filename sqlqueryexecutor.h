@@ -23,12 +23,16 @@ public:
         QVector<QString> headers;
         QVector<QVector<QString>> data;
 
-        bool operator ==(const QueryResult &other) const noexcept {
+        inline bool operator ==(const QueryResult &other) const noexcept {
             return headers == other.headers && data == other.data;
         }
 
-        bool operator !=(const QueryResult &other) const noexcept {
+        inline bool operator !=(const QueryResult &other) const noexcept {
             return !operator==(other);
+        }
+
+        inline bool isEmpty() const {
+            return headers.isEmpty() && data.isEmpty();
         }
     };
 
