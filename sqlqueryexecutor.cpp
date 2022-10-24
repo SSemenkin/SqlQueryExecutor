@@ -34,7 +34,6 @@ SqlQueryExecutor::~SqlQueryExecutor()
         thread()->quit();
         thread()->wait();
     }
-    QSqlDatabase::removeDatabase(m_connectionName);
 }
 
 QString SqlQueryExecutor::query() const
@@ -49,9 +48,7 @@ QSqlDatabase SqlQueryExecutor::database() const
 
 void SqlQueryExecutor::execQuery()
 {
-    QSqlDatabase database = QSqlDatabase::cloneDatabase(m_connectionName,
-                                                        m_connectionName = getAvailableConnectionName());
-
+    QSqlDatabase database = QSqlDatabase::cloneDatabase(m_connectionName, getAvailableConnectionName());
     if (database.open()) {
         QSqlQuery query(database);
         if (query.exec(m_query)) {
